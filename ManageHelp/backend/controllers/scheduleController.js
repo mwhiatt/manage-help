@@ -1,7 +1,4 @@
 const Schedule = require('../models/scheduleModel')
-const User = require('../models/userModel')
-const Workspace = require('../models/workspaceModel')
-const sendEmail = require('../utils/sendEmail')
 
 // POST / | Create a new schedule
 const createSchedule = async (req, res) => {
@@ -106,7 +103,7 @@ const getByWorkspaceDate = async(req, res) => {
 
     try {
         const schedule = await Schedule.findOne({workspace_id: id, date: date})
-        
+
         res.status(200).json(schedule)
     } catch (error) {
         res.status(400).json({error: error.message})

@@ -1,7 +1,5 @@
 const DayOffRequest = require('../models/dayOffRequest')
 const User = require('../models/userModel')
-const Workspace = require('../models/workspaceModel')
-const sendEmail = require('../utils/sendEmail')
 
 // POST /api/dor
 const createDayOffRequest = async (req, res) => {
@@ -45,7 +43,7 @@ const rejectDayOffRequest = async (req, res) => {
 
 const getAllByWorkspace = async (req, res) => {
     const { id } = req.params
-    
+
     try {
         const list = await DayOffRequest.find({workspace_id: id})
         res.status(200).json(list)

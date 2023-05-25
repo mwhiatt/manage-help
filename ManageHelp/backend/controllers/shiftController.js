@@ -1,8 +1,6 @@
 const Shift = require('../models/shiftModel')
 const Schedule = require('../models/scheduleModel')
 const User = require('../models/userModel')
-const Workspace = require('../models/workspaceModel')
-const sendEmail = require('../utils/sendEmail')
 
 const createShift = async (req, res) => {
     const {employee_email, workspace_id, schedule_id, start_time, end_time, role, published} = req.body
