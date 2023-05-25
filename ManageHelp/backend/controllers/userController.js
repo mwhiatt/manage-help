@@ -37,8 +37,7 @@ const changePassword = async (req, res) => {
     const { email, password } = req.body
 
     try {
-        const user = await User.changePassword(email, password)
-        sendEmail('ManageHelp | Password Changed', 'Your password has been updated.', email, process.env.EMAIL_USER, process.env.EMAIL_USER)
+        await User.changePassword(email, password)
         res.status(200).json({message: "change password worked"})
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -46,7 +45,6 @@ const changePassword = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-
     const {email} = req.body
 
     let new_pass = '';
@@ -59,17 +57,12 @@ const resetPassword = async (req, res) => {
     }
 
     try {
-
-        const user = await User.resetPassword(email, new_pass)
-
+        await User.resetPassword(email, new_pass)
         await sendEmail("ManageHelp | Password Reset", "<p>Your new password is: " + new_pass + "</p><br/><p>You can log in with this password, and change it under 'Settings'</p>", email, process.env.EMAIL_USER, process.env.EMAIL_USER)
-
         res.status(200).json({message: "reset worked"})
-
     } catch (error) {
         res.status(400).json({error: error.message})
     }
-
 }
 
 const getUser = async (req, res) => {
@@ -103,36 +96,26 @@ const updateUser = async (req, res) => {
 }
 
 const setRestrictions = async (req, res) => {
-
     const {restrictions, email} = req.body
 
     try {
-
         const user = await User.findOneAndUpdate({email: email}, {restrictions: restrictions})
         console.log(user)
 
         res.status(200).json({user})
-
     } catch (error) {
         res.status(400).json({error: error})
     }
-
 }
 
 const getByID = async (req, res) => {
-
     const {id} = req.params
-
     try {
-
         const user = await User.findOne({_id: id})
-
         res.status(200).json(user)
-
     } catch (error) {
         res.status(400).json({error: error.message})
     }
-
 }
 
 module.exports = { signupUser, loginUser, changePassword, resetPassword, getUser, updateUser, setRestrictions, getByID }
