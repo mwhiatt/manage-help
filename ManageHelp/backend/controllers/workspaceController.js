@@ -195,7 +195,6 @@ const transferWorkspace = async (req, res) => {
 }
 
 const removeUser = async (req, res) => {
-
     const { email } = req.body
     const { id } = req.params
 
@@ -214,7 +213,6 @@ const removeUser = async (req, res) => {
 }
 
 const promoteUser = async (req, res) => {
-
     try {
 
         const { id } = req.params
@@ -226,44 +224,26 @@ const promoteUser = async (req, res) => {
         const user = await User.getUserByEmail(email)
         if (!user) throw Error('No such user')
 
-        // Update
-
         workspace = await Workspace.findOneAndUpdate({_id: id}, {$pull: {employee_list: {$in: [user._id]}}, $push: {manager_list: user._id}})
-        sendEmail('Promotion | ManageHelp', `You have been promoted to a Manager for Workspace: ${workspace.companyName}<br />You now have scheduling permissions for this workspace.`, user.email, process.env.EMAIL_USER, process.env.EMAIL_USER)
-
-        // Success status
-
         res.status(200).json({msg: 'Success', data: workspace})
 
     } catch (error) {
         res.status(400).json({error: error})
     }
-
 }
 
 const demoteUser = async (req, res) => {
-
     try {
-
         const { id } = req.params
         const { email } = req.body
         
-
         let workspace = await Workspace.findOne({_id: id})
         if (!workspace) throw Error('No such workspace')
         
-
         const user = await User.getUserByEmail(email)
         if (!user) throw Error('No such user')
         
-
-        // Update
-
         workspace = await Workspace.findOneAndUpdate({_id: id}, {$pull: {manager_list: {$in: [user._id]}}, $push: {employee_list: user._id}})
-        sendEmail('Demotion | ManageHelp', `You have been demoted to an Employee for Workspace: ${workspace.companyName}<br/>You no longer have scheduling permissions for this workspace.`, user.email, process.env.EMAIL_USER, process.env.EMAIL_USER)
-
-        // Success status
-
         res.status(200).json({msg: 'Success', data: workspace})
 
     } catch (error) {
@@ -276,29 +256,20 @@ const demoteUser = async (req, res) => {
 const createAnnouncement= async (req, res) => {
     const {mssg, wid, mode, pin} = req.body //mode is whether to notify or not
     let emptyFields = []
-    if (!mssg) {
-        emptyFields.push('message')
-    }
-    if (!pin) {
-        pin = 1
-    }
-    if (emptyFields.length > 0) {
-        return res.status(400).json({error: 'Please fill in mssg', emptyFields})
-    }
-    // add doc to db
+    if (!mssg) { emptyFields.push('message') }
+    if (!pin) { pin = 1 }
+    if (emptyFields.length > 0) { return res.status(400).json({error: 'Please fill in mssg', emptyFields}) }
+
     try {
         const creator = await User.findOne({_id: req.user._id})
         const announcement = await Announcement.create({creator_id: creator._id, creatorName: creator.name, text: mssg, status: pin})
-        //add announcement to workspace
         const ws = await Workspace.findOneAndUpdate({_id: wid}, {$push: {announcement_list: announcement}}, {new: true})
-        if (!ws) {
-            return res.status(400).json({error: 'no workspace found with wid'})
-        }
-        if (mode === 'notify') {
-            if (ws.employee_list.length > 0) {
-                ws.employee_list.forEach(emp => 
-                    sendEmail('Announcement | ManageHelp', `New Manager Announcement in: ${ws.companyName}<br/>${mssg}`, emp.email, process.env.EMAIL_USER, process.env.EMAIL_USER))
-            }  
+
+        if (!ws) { return res.status(400).json({error: 'no workspace found with wid'}) }
+
+        if (mode === 'notify' && ws.employee_list.length > 0) {
+            ws.employee_list.forEach(emp => 
+                sendEmail('Announcement | ManageHelp', `New Manager Announcement in: ${ws.companyName}<br/>${mssg}`, emp.email, process.env.EMAIL_USER, process.env.EMAIL_USER))
         }
 
         res.status(200).json(announcement)
@@ -313,9 +284,8 @@ const getAnnouncements = async (req, res) => {
     const { id } = req.params
     const workspace = await Workspace.findById(id)
 
-    if (!workspace) {
-        return res.status(404).json({error: 'No workspace found with ID'})
-    }
+    if (!workspace) { return res.status(404).json({error: 'No workspace found with ID'}) }
+    
     const list_announcements = []
     for (var i = 0; i < workspace.announcement_list.length; i++) {
         let announceID = workspace.announcement_list[i]
