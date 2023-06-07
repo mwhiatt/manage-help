@@ -5,6 +5,7 @@ const {
     getWorkspaces,
     deleteWorkspace,
     updateWorkspace,
+    leaveWorkspace,
     joinWorkspace,
     removeUser,
     promoteUser,
@@ -35,6 +36,9 @@ router.post('/', createWorkspace)
 
 // DELETE a workspace
 router.delete('/:id', deleteWorkspace)
+
+// leave a workspace
+router.patch('/leave/:id', leaveWorkspace)
 
 // remove a user from a workspace
 router.delete('/remove/:id', removeUser)
