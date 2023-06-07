@@ -133,11 +133,28 @@ const updateWorkspace = async (req, res) => {
     res.status(200).json(workspace)
 }
 
+// update a workspace
+const leaveWorkspace = async (req, res) => {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({error: 'No such workspace'})
+    }
+    const workspace = await Workspace.findOneAndUpdate({_id: id}, {
+        ...req.body
+    })
+
+    if (!workspace) {
+        return res.status(404).json({error: 'No such workspace'})
+    }
+
+    res.status(200).json(workspace)
+}
+
 // Join a workspace
 const joinWorkspace = async (req, res) => {
 
     const code = parseInt(req.body.join_code)
-    console.log("inside joine workspace")
+    console.log("inside join workspace")
     console.log(code)
     let emptyFields = []
     if (!code) {
@@ -156,8 +173,8 @@ const joinWorkspace = async (req, res) => {
         return res.status(400).json({error: 'Can not join same workspace more than once!', emptyFields})
     }
 
-    const user = await User.findOneAndUpdate({_id: req.user._id}, {$push : {workspaces: workspace._id}})
-    console.log(req.user._id) //The user id for ssharan31@gmail.com
+    await User.findOneAndUpdate({_id: req.user._id}, {$push : {workspaces: workspace._id}})
+    console.log(req.user._id) 
     console.log(workspace._id)
     console.log(workspace.joinCode)
     res.status(200).json(workspace);
@@ -166,7 +183,6 @@ const joinWorkspace = async (req, res) => {
 
 // Transfer a user from a workspace to another
 const transferWorkspace = async (req, res) => {
-
     console.log("transfer user")
     const {join_code, user_email} = req.body
     console.log(join_code)
@@ -191,7 +207,6 @@ const transferWorkspace = async (req, res) => {
     console.log(workspace.joinCode)
 
     res.status(200).json(workspace);
-
 }
 
 const removeUser = async (req, res) => {
@@ -308,5 +323,6 @@ module.exports = {
     getEmployees,
     transferWorkspace,
     getAnnouncements,
-    createAnnouncement
+    createAnnouncement,
+    leaveWorkspace
 }
