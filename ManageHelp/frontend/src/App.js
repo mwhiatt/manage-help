@@ -8,7 +8,6 @@ import Signup from './pages/Signup'
 import Settings from './pages/Settings'
 import WorkspaceView from './pages/WorkspaceView'
 import Navbar from './components/Navbar'
-import Schedule from './pages/Schedule'
 import EditSchedules from './pages/EditSchedules'
 import ViewSchedules from './pages/ViewSchedules'
 

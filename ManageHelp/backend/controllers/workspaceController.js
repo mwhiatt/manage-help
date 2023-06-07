@@ -135,16 +135,17 @@ const updateWorkspace = async (req, res) => {
 
 // update a workspace
 const leaveWorkspace = async (req, res) => {
+    const uid = parseInt(req.body.uid)
     const { id } = req.params
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({error: 'No such workspace'})
-    }
-    const workspace = await Workspace.findOneAndUpdate({_id: id}, {
-        ...req.body
-    })
+    const workspace = await Workspace.findOneAndUpdate({id: id}, {$pull: {employee_list: uid}, $pull: {manager_list: uid}})
 
     if (!workspace) {
-        return res.status(404).json({error: 'No such workspace'})
+        return res.status(404).json({error: "Could not find workspace to leave."})
+    }
+
+    const user = await User.findOneAndUpdate({id: uid}, {$pull: {workspaces: id}})
+    if (!user) {
+        return res.status(404).json({error: "Error removing workspace from your page."})
     }
 
     res.status(200).json(workspace)

@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns';
 
-
 import { useWorkspaceContext } from "../../hooks/useWorkspaceContext"
 import { useAuthContext } from "../../hooks/useAuthContext"
 
@@ -12,22 +11,36 @@ const WorkspaceDetails = ({ workspace }) => {
     const formattedDate = format(date, "MM/dd/yyyy");
 
     const handleClick = async () => {
-        if (!user) {
-            return
-        }
-        const response = await fetch('/api/workspaces/' + workspace._id, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        const json = await response.json()
+        if (!user) { return }
 
-        if (response.ok) {
-            dispatch({type: 'DELETE_WORKSPACE', payload: json})
+        const bodyContent = {
+            uid: user._id
         }
+
+        if (user._id === workspace._id) {
+            const response = await fetch('/api/workspaces/' + workspace._id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            const json = await response.json()
+            if (response.ok) { dispatch({type: 'DELETE_WORKSPACE', payload: json}) }
+        } else {
+            const response = await fetch('/api/workspaces/leave/' + workspace._id, {
+                method: 'PATCH',
+                body: JSON.stringify(bodyContent),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            const json = await response.json()
+            if (response.ok) { dispatch({type: 'DELETE_WORKSPACE', payload: json}) }
+        }
+
+        
     }
-
 
     return (
         <div className="workspace-details">
