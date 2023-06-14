@@ -7,8 +7,10 @@ import { useAuthContext } from "../hooks/useAuthContext"
 import WorkspaceDetails from "../components/Home/WorkspaceDetails"
 import CreateWorkspaceForm from "../components/Home/CreateWorkspaceForm"
 import JoinWorkspaceForm from "../components/Home/JoinWorkspaceForm"
+import NoneFound from "../components/Home/NoneFound"
 
 const Home = () => {
+  
   const { workspaces, dispatch } = useWorkspaceContext()
   const {user} = useAuthContext()
 
@@ -35,9 +37,9 @@ const Home = () => {
     <div className="home">
         <div className="workspaces">
         <h2>Workspaces</h2>
-          {workspaces && workspaces.map(w => (
+          {(workspaces && workspaces.length != 0) ? workspaces.map(w => (
             <WorkspaceDetails workspace={w} key={w._id} />
-          ))}
+          )) : <NoneFound type="workspace" />}
         </div>
         <div id="join-create">
           <CreateWorkspaceForm />
