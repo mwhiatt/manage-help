@@ -14,10 +14,13 @@ const WorkspaceDetails = ({ workspace }) => {
         if (!user) { return }
 
         const bodyContent = {
-            uid: user._id
+            uid: user.id
         }
+        console.log(bodyContent)
+        //console.log(workspace.owner_id)
 
-        if (user._id === workspace._id) {
+        if (user.id === workspace.owner_id) {
+            console.log('deleting')
             const response = await fetch('/api/workspaces/' + workspace._id, {
                 method: 'DELETE',
                 headers: {
@@ -27,6 +30,7 @@ const WorkspaceDetails = ({ workspace }) => {
             const json = await response.json()
             if (response.ok) { dispatch({type: 'DELETE_WORKSPACE', payload: json}) }
         } else {
+            console.log('leaving')
             const response = await fetch('/api/workspaces/leave/' + workspace._id, {
                 method: 'PATCH',
                 body: JSON.stringify(bodyContent),

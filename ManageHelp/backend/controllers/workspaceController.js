@@ -9,9 +9,7 @@ const sendEmail = require('../utils/sendEmail')
 const getWorkspaces = async (req, res) => {
     //display workspaces belonging to the user
     const owner_id = req.user._id
-    console.log(req.user._id)
     const owned_workspaces = await Workspace.find({ owner_id }).sort({createdAt: -1})
-    console.log(owned_workspaces)
 
     const user = await User.findOne({_id: req.user._id})
 
@@ -24,7 +22,6 @@ const getWorkspaces = async (req, res) => {
         }
     }) 
     owned_workspaces.forEach(w => {
-        console.log("added....")
         list_workspaces.push(w)
     })
 
@@ -135,15 +132,15 @@ const updateWorkspace = async (req, res) => {
 
 // update a workspace
 const leaveWorkspace = async (req, res) => {
-    const uid = parseInt(req.body.uid)
+    const leavingid = req.body.uid
     const { id } = req.params
-    const workspace = await Workspace.findOneAndUpdate({id: id}, {$pull: {employee_list: uid}, $pull: {manager_list: uid}})
+    const workspace = await Workspace.findOneAndUpdate({id: id}, {$pull: {employee_list: leavingid}, $pull: {manager_list: leavingid}})
 
     if (!workspace) {
         return res.status(404).json({error: "Could not find workspace to leave."})
     }
 
-    const user = await User.findOneAndUpdate({id: uid}, {$pull: {workspaces: id}})
+    const user = await User.findByIdAndUpdate(leavingid, {$pull: {'workspaces': mongoose.Types.ObjectId(id)}}, {new: true})
     if (!user) {
         return res.status(404).json({error: "Error removing workspace from your page."})
     }
@@ -155,8 +152,6 @@ const leaveWorkspace = async (req, res) => {
 const joinWorkspace = async (req, res) => {
 
     const code = parseInt(req.body.join_code)
-    console.log("inside join workspace")
-    console.log(code)
     let emptyFields = []
     if (!code) {
         emptyFields.push('joinCode')
@@ -175,19 +170,13 @@ const joinWorkspace = async (req, res) => {
     }
 
     await User.findOneAndUpdate({_id: req.user._id}, {$push : {workspaces: workspace._id}})
-    console.log(req.user._id) 
-    console.log(workspace._id)
-    console.log(workspace.joinCode)
     res.status(200).json(workspace);
 
 }
 
 // Transfer a user from a workspace to another
 const transferWorkspace = async (req, res) => {
-    console.log("transfer user")
     const {join_code, user_email} = req.body
-    console.log(join_code)
-    console.log(user_email)
 
     const user_to_transfer = await User.getUserByEmail(user_email)
     if (!user_to_transfer) throw Error('No such user')
@@ -204,8 +193,6 @@ const transferWorkspace = async (req, res) => {
 
     const user = await User.findOneAndUpdate({_id: user_to_transfer._id}, {$push : {workspaces: workspace._id}})
     sendEmail('Workspace Transfer | ManageHelp', `You have been transferred to the following workspace: ${workspace.companyName}<br />`, user_to_transfer.email, process.env.EMAIL_USER, process.env.EMAIL_USER)
-    console.log(workspace._id)
-    console.log(workspace.joinCode)
 
     res.status(200).json(workspace);
 }
