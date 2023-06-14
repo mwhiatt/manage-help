@@ -7,6 +7,8 @@ import PromoteDemoteForm from './PromoteDemoteForm'
 import EmployeeDetails from './EmployeeDetails'
 import ViewLaborCosts from './ViewLaborCosts'
 import TransferUserForm from './TransferUserForm'
+import NoneFound from '../Home/NoneFound'
+
 // context and effects
 import { useEffect } from 'react'
 import { useEmployeeContext } from "../../hooks/useEmployeeContext"
@@ -54,11 +56,11 @@ const AdminFunctionsComponent = ({workspace, render_func}) => {
             <Collapsible trigger={[<BsChevronDown />, " Employee List"]}>
             <div className="workspaces">
                 <h3>Employee List</h3>
-                {employees && employees.map(employee => (
+                {(employees && employees.length > 0) ? employees.map(employee => (
                 <EmployeeDetails workspace={workspace} 
                 employee={employee}
                 key={employee._id}/>
-                ))}
+                )) : <NoneFound type="employee"/>}
             </div>
             </Collapsible>
 
