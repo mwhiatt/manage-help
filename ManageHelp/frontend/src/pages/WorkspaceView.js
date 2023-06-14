@@ -87,8 +87,6 @@ const WorkspaceView = () => {
                 
             })
     }, [runUseEffect])
-    //console.log("wid in view: " + workspace._id)
-    //console.log("uid in view: " + user._id)
     if (workspace && user) {
         return (
             <div id="container">
