@@ -12,10 +12,16 @@ This project is implemented on the MERN stack.
 
 # Commit Message Styling After April 2023
 Messages are concise and present tense. Tags are as follows:
-feat: new user end feature or improvement
-fix: bug fix
-chore: code functionality change not noticeable to end user, removal of deprecated/cluttered functionality
-refactor: code style improvements, readability or complexity improvements, etc
+* feat: new user end feature or improvement
+* fix: bug fix
+* chore: code functionality change not noticeable to end user, removal of deprecated/cluttered functionality
+* refactor: code style improvements, readability or complexity improvements, etc
+
+# Usage
+1. ```nvm use``` ensures you are on correct node version (if you use nvm to manage versions)
+2. ```npm ci``` in backend and frontend folders
+3. ```npm run dev``` in backend
+4. ```npm run start``` in frontend
 
 # Credit
 Significant CSS remains from the original MERN stack tutorial followed to create the very barebones infrastructure for this project. Thanks to youtuber "The Net Ninja," his tutorial can be found here https://youtube.com/playlist?list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE.
